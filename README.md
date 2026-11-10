@@ -1,44 +1,36 @@
-# Lineform Lab / 线条成像实验室
+# 线条成像 · Lineform Lab
 
-A browser-native interactive generative-art playground inspired by the Houdini animated spiral-line technique.
+A browser-based procedural line study inspired by SUPERWORLD's “HOUDINI 教程｜如何绘制动态螺旋线”.
 
-**No video is used as the output/background.** Shapes are redrawn in real time using Canvas 2D, animated by code, and respond to pointer hover.
+## Experience
 
-## Features
+A native browser animation studio with four interchangeable drawing styles: elliptical spirals, flowing waves, breathing dots, and drifting dashes. The image source and drawing style are independent. Presets include a hand, butterfly, ginkgo leaf, typography, and a shaded sphere; users can also import an image locally. Images stay in the browser and are never uploaded to a server. PNG exports are rendered at 2400 × 2400, and SVG exports retain editable paths or circles.
 
-- Four rendering modes: **Spiral**, **Wave**, **Dots**, **Strokes**.
-- Five built-in subjects: **Hand**, **Butterfly**, **Ginkgo**, **Sphere**, **Custom text**.
-- Import your own PNG/JPEG/WebP/SVG image (including transparent logos), or a video as the *source mask*.
-- Hover interactions: **Repel**, **Attract**, **Off**, with adjustable radius and strength.
-- Live controls for density, amplitude, frequency, motion speed, and contrast.
-- Pause auto-animation without disabling hover.
-- Export 2400 × 2400 PNG and editable SVG vectors.
-- Responsive layout. No dependencies, trackers, external fonts, or build step.
+## Mouse interaction
 
-## Run
+The pointer creates a smooth local repulsion or attraction field. Moving away lets the geometry return to its original shape. Interaction continues to work with automatic motion paused or at zero speed. Pointer coordinates are mapped through the centered square drawing area using CSS pixels, independently of display DPR. Touch input supports tapping while preserving vertical page scrolling.
 
-Open `index.html` in a browser, or run a local server:
+The interface presents live artwork controls instead of a video timeline. The underlying renderer retains source-media support, but the user-facing importer is intentionally focused on static images that become animated procedural drawings.
 
-```bash
-python3 -m http.server 8000
-```
+## Geometry
 
-Then open http://localhost:8000.
-
-## Project layout
+Each horizontal path is sampled with parameter `u`. A brightness mask `m(u,y,t)` controls both axes:
 
 ```
-index.html       # Interface and controls
-src/styles.css   # Visual design and responsive layout
-src/main.js      # Image-mask sampling, real-time drawing, hover, export
+x = u + rx * m * cos(theta)
+y = rowY + ry * m * sin(theta)
 ```
 
-## Background
+The horizontal derivative can become negative, giving actual back-looping coils. A y-only sine wave would not produce this shape. Low mask values preserve flat lines. This is an independent browser implementation of the visual principle; it does not run Houdini or reproduce its node network.
 
-This repository contains a **standalone source implementation** of the interactive Lineform concept. It was reconstructed for GitHub from the published experience and requirements rather than exported byte-for-byte from the original Sites authoring environment.
+## Development
 
-Originally explored from the Houdini tutorial: https://xhslink.cn/o/17FlIYE0rch
+The application uses the supplied Vinext / Vite framework with React and Canvas2D. The renderer is isolated in `lib/spiral-renderer.js`; the React page owns the controls, pointer event binding, and local image lifecycle. Continuous paths, circles, and short paths use shared geometry for the canvas, PNG, and SVG outputs. Local flat-path compression retains enough vertices around an active pointer to bend empty regions accurately.
 
-Live concept: https://spiral-image-lab.brisk-corgi-8205.chatgpt.site
+```
+npm install
+npm run dev
+npm run build
+```
 
-No license has been assigned; copyright remains with its respective owners.
+Reference: https://xhslink.cn/o/17FlIYE0rch
