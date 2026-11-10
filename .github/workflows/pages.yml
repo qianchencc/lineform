@@ -50,13 +50,6 @@ jobs:
           };
           export default nextConfig;
           CONFIG
-      - name: Use portable build Vite configuration
-        run: |
-          cat > vite.config.ts <<'VITE'
-          import { defineConfig } from "vite";
-          import vinext from "vinext";
-          export default defineConfig({ plugins: [vinext()] });
-          VITE
       - name: Build original application as static site
         run: ./node_modules/.bin/next build
       - name: Inspect and verify static output
